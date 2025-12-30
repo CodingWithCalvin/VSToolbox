@@ -1,0 +1,68 @@
+# Claude Code
+.claude/
+
+# Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# NuGet
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+
+# MSTest
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# Windows Store app package directories
+AppPackages/
+BundleArtifacts/
+Package.StoreAssociation.xml
+_pkginfo.txt
+*.appx
+*.appxbundle
+*.appxupload
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# User-specific files
+*.rsuser
+*.csproj.user
+*.dbmdl
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Generated files
+Generated\ Files/
+
+# Publish profiles
+PublishScripts/
+*.pubxml
+!**/[Pp]ublish[Pp]rofiles/*.pubxml
+
+# dotenv files
+.env
+.env.*
+!.env.example
+
+# Local settings
+appsettings.*.json
+!appsettings.Development.json
