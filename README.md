@@ -33,20 +33,32 @@ Visual Studio Toolbox is a sleek **system tray application** for Windows that he
 | 📁 **Quick Access** | Open installation folders and AppData directories |
 | 🖥️ **Windows Terminal** | Integrates with your Windows Terminal profiles |
 | 📌 **System Tray** | Lives quietly in your system tray until needed |
+| ⚙️ **Configurable** | Startup and window behavior settings |
+| 🪟 **Custom Chrome** | Sleek custom title bar with VS purple branding |
 
 ---
 
 ## 📸 Screenshots
 
 ### Instance List
-See all your Visual Studio installations at a glance, including version info, build numbers, and preview badges:
+See all your Visual Studio installations at a glance, including version info, build numbers, and channel badges:
 
-![Instance List](instance-list.png)
+![Instance List](assets/instance-list.png)
+
+### Hover State
+Hover over any installation to highlight it with the signature purple accent:
+
+![Instance List Hover](assets/instance-list-hover.png)
 
 ### Quick Actions Menu
 Access powerful options for each installation - open folders, launch dev shells, and more:
 
-![Instance Menu](instance-menu.png)
+![Instance Menu](assets/instance-list-menu.png)
+
+### Settings
+Configure startup behavior and window preferences:
+
+![Settings](assets/settings.png)
 
 ---
 
@@ -75,7 +87,7 @@ dotnet run --project src/CodingWithCalvin.VSToolbox
 
 ## 🎮 Usage
 
-### 🖱️ Main Window
+### 🖱️ Installed Tab
 - **Click** the ▶️ play button to launch Visual Studio
 - **Click** the ⚙️ gear button for more options:
   - 📂 Open Explorer - Open the VS installation folder
@@ -83,10 +95,15 @@ dotnet run --project src/CodingWithCalvin.VSToolbox
   - 🐚 VS PowerShell - Launch Developer PowerShell
   - 📁 Open Local AppData - Access VS settings and extensions
 
+### ⚙️ Settings Tab
+- **Launch on startup** - Start Visual Studio Toolbox when Windows starts
+- **Start minimized** - Launch directly to the system tray
+- **Minimize to tray** - Hide to system tray when minimizing
+- **Close to tray** - Hide to system tray instead of exiting
+
 ### 📌 System Tray
 - **Click** the tray icon to show/hide the window
 - **Right-click** for quick menu (Show / Exit)
-- **X button** minimizes to tray instead of closing
 
 ---
 
