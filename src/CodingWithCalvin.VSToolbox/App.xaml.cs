@@ -30,6 +30,13 @@ public partial class App : Application
         var windowId = Win32Interop.GetWindowIdFromWindow(hwnd);
         _appWindow = AppWindow.GetFromWindowId(windowId);
 
+        // Set the window/taskbar icon
+        var iconPath = Path.Combine(AppContext.BaseDirectory, "Assets", "vs2026_icon.ico");
+        if (File.Exists(iconPath))
+        {
+            _appWindow.SetIcon(iconPath);
+        }
+
         // Set up the main content
         var rootFrame = new Frame();
         rootFrame.NavigationFailed += OnNavigationFailed;
