@@ -21,6 +21,26 @@ public sealed class VisualStudioInstance
 
     public string BuildNumber => InstallationVersion;
 
+    public string ChannelType => ParseChannelType(ChannelId);
+
+    private static string ParseChannelType(string channelId)
+    {
+        // ChannelId format: VisualStudio.{majorVersion}.{channel}
+        // e.g., VisualStudio.17.Release, VisualStudio.17.Preview, VisualStudio.17.Canary
+        var parts = channelId.Split('.');
+        if (parts.Length < 3)
+            return "Unknown";
+
+        return parts[^1] switch
+        {
+            "Release" => "Stable",
+            "Preview" => "Preview",
+            "Canary" => "Canary",
+            "IntPreview" => "Internal Preview",
+            _ => parts[^1]
+        };
+    }
+
     public bool CanLaunch => !string.IsNullOrEmpty(ProductPath) &&
         ProductPath.EndsWith("devenv.exe", StringComparison.OrdinalIgnoreCase);
 

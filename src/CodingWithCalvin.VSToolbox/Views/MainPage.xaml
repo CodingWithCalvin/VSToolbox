@@ -84,34 +84,37 @@
                                     TextTrimming="CharacterEllipsis"/>
                             </StackPanel>
 
-                            <!-- Prerelease Badge -->
+                            <!-- Channel Type Badge -->
                             <Border
                                 Grid.Column="2"
-                                Visibility="{x:Bind IsPrerelease}"
-                                Background="{ThemeResource SystemAccentColorDark1}"
                                 CornerRadius="4"
                                 Padding="8,4"
-                                VerticalAlignment="Center">
+                                VerticalAlignment="Center"
+                                Background="{x:Bind ChannelType, Converter={StaticResource ChannelTypeToBrushConverter}}">
                                 <TextBlock
-                                    Text="Preview"
+                                    Text="{x:Bind ChannelType}"
                                     FontSize="10"
-                                    Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"/>
+                                    FontWeight="SemiBold"
+                                    Foreground="White"/>
                             </Border>
 
                             <!-- Action Buttons -->
                             <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
-                                <Button
-                                    Click="OnLaunchClick"
-                                    ToolTipService.ToolTip="Launch"
-                                    Visibility="{x:Bind CanLaunch, Converter={StaticResource BoolToVisibilityConverter}}"
-                                    Padding="8"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    Opacity="0.6"
-                                    PointerEntered="OnButtonPointerEntered"
-                                    PointerExited="OnButtonPointerExited">
-                                    <SymbolIcon Symbol="Play" Foreground="#22C55E"/>
-                                </Button>
+                                <!-- Fixed-width container to maintain alignment when Play button is hidden -->
+                                <Border Width="40">
+                                    <Button
+                                        Click="OnLaunchClick"
+                                        ToolTipService.ToolTip="Launch"
+                                        Visibility="{x:Bind CanLaunch, Converter={StaticResource BoolToVisibilityConverter}}"
+                                        Padding="8"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Opacity="0.6"
+                                        PointerEntered="OnButtonPointerEntered"
+                                        PointerExited="OnButtonPointerExited">
+                                        <SymbolIcon Symbol="Play" Foreground="#22C55E"/>
+                                    </Button>
+                                </Border>
                                 <Button
                                     ToolTipService.ToolTip="Options"
                                     Padding="8"
