@@ -190,3 +190,4 @@ jobs:
         Check out the release notes here: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}
     secrets:
       LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+      LINKEDIN_CLIENT_ID: ${{ secrets.LINKEDIN_CLIENT_ID }}
