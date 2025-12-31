@@ -22,7 +22,7 @@ jobs:
 
           # Fetch closed issues and check if they were closed by a merged PR
           issue_authors=""
-          closed_issues=$(gh api repos/${{ github.repository }}/issues --paginate -q '.[] | select(.state == "closed") | select(.pull_request == null) | {number, login: .user.login}')
+          closed_issues=$(gh api "repos/${{ github.repository }}/issues?state=closed" --paginate -q '.[] | select(.pull_request == null) | {number, login: .user.login}')
 
           for row in $(echo "$closed_issues" | jq -c '.'); do
             issue_num=$(echo "$row" | jq -r '.number')
