@@ -89,13 +89,11 @@
                                 <TextBlock Text="Installed"/>
                             </StackPanel>
                         </RadioButton>
-                        <!-- Settings tab hidden for now -->
                         <RadioButton
                             x:Name="SettingsTab"
                             GroupName="MainTabs"
                             Checked="OnTabChanged"
-                            Style="{StaticResource PillTabStyle}"
-                            Visibility="Collapsed">
+                            Style="{StaticResource PillTabStyle}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <FontIcon Glyph="&#xE713;" FontSize="14"/>
                                 <TextBlock Text="Settings"/>
@@ -241,16 +239,100 @@
 
         <!-- Settings Tab Content -->
         <ScrollViewer x:Name="SettingsContent" Grid.Row="1" Visibility="Collapsed">
-            <StackPanel Spacing="24" Padding="0,0,16,0">
-                <!-- Placeholder for settings content -->
+            <StackPanel Spacing="8" Padding="0,0,16,0">
+                <!-- Startup Section -->
                 <TextBlock
-                    Text="Settings"
-                    FontSize="20"
+                    Text="Startup"
+                    FontSize="14"
                     FontWeight="SemiBold"
-                    Style="{StaticResource AppTitleStyle}"/>
+                    Margin="0,0,0,4"/>
+
+                <!-- Launch on startup -->
+                <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="6" Padding="12,8">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock Text="Launch on startup" FontWeight="SemiBold"/>
+                            <TextBlock Text="Start Visual Studio Toolbox when Windows starts"
+                                       FontSize="12"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                        <ToggleSwitch x:Name="LaunchOnStartupToggle"
+                                      Grid.Column="1"
+                                      Toggled="OnLaunchOnStartupToggled"
+                                      OnContent="" OffContent=""/>
+                    </Grid>
+                </Border>
+
+                <!-- Start minimized -->
+                <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="6" Padding="12,8">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock Text="Start minimized" FontWeight="SemiBold"/>
+                            <TextBlock Text="Start the app minimized to the system tray"
+                                       FontSize="12"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                        <ToggleSwitch x:Name="StartMinimizedToggle"
+                                      Grid.Column="1"
+                                      Toggled="OnStartMinimizedToggled"
+                                      OnContent="" OffContent=""/>
+                    </Grid>
+                </Border>
+
+                <!-- Behavior Section -->
                 <TextBlock
-                    Text="Settings options will appear here."
-                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                    Text="Behavior"
+                    FontSize="14"
+                    FontWeight="SemiBold"
+                    Margin="0,8,0,4"/>
+
+                <!-- Minimize to tray -->
+                <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="6" Padding="12,8">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock Text="Minimize to tray" FontWeight="SemiBold"/>
+                            <TextBlock Text="Hide to system tray when minimizing"
+                                       FontSize="12"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                        <ToggleSwitch x:Name="MinimizeToTrayToggle"
+                                      Grid.Column="1"
+                                      Toggled="OnMinimizeToTrayToggled"
+                                      OnContent="" OffContent=""/>
+                    </Grid>
+                </Border>
+
+                <!-- Close to tray -->
+                <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="6" Padding="12,8">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock Text="Close to tray" FontWeight="SemiBold"/>
+                            <TextBlock Text="Hide to system tray instead of closing the app"
+                                       FontSize="12"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                        <ToggleSwitch x:Name="CloseToTrayToggle"
+                                      Grid.Column="1"
+                                      Toggled="OnCloseToTrayToggled"
+                                      OnContent="" OffContent=""/>
+                    </Grid>
+                </Border>
             </StackPanel>
         </ScrollViewer>
 

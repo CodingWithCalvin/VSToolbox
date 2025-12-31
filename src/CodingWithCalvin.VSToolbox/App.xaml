@@ -14,6 +14,12 @@
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
             </ResourceDictionary.MergedDictionaries>
 
+            <!-- Override ToggleSwitch accent color to purple -->
+            <SolidColorBrush x:Key="ToggleSwitchFillOn" Color="#68217A"/>
+            <SolidColorBrush x:Key="ToggleSwitchFillOnPointerOver" Color="#7B2A91"/>
+            <SolidColorBrush x:Key="ToggleSwitchFillOnPressed" Color="#551A66"/>
+            <SolidColorBrush x:Key="ToggleSwitchFillOnDisabled" Color="#4D68217A"/>
+
             <!-- Converters -->
             <converters:NullToBoolConverter x:Key="NullToBoolConverter"/>
             <converters:FilePathToImageConverter x:Key="FilePathToImageConverter"/>
