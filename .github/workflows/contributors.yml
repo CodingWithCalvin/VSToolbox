@@ -20,7 +20,7 @@ jobs:
           # Fetch code contributors (exclude bots)
           code_contributors=$(gh api repos/${{ github.repository }}/contributors --paginate --jq '.[] | select(.type != "Bot") | select(.login | test("\\[bot\\]$") | not) | .login')
 
-          # Fetch closed issues and check if they were closed by a PR
+          # Fetch closed issues and check if they were closed by a merged PR
           issue_authors=""
           closed_issues=$(gh api repos/${{ github.repository }}/issues --paginate -q '.[] | select(.state == "closed") | select(.pull_request == null) | {number, login: .user.login}')
 
@@ -28,8 +28,11 @@ jobs:
             issue_num=$(echo "$row" | jq -r '.number')
             login=$(echo "$row" | jq -r '.login')
 
-            # Check timeline for closed event with commit (meaning closed by PR)
-            closed_by_pr=$(gh api repos/${{ github.repository }}/issues/$issue_num/timeline --paginate -q '.[] | select(.event == "closed") | select(.commit_id != null) | .commit_id' | head -1)
+            # Check timeline for cross-referenced merged PR that closed this issue
+            closed_by_pr=$(gh api repos/${{ github.repository }}/issues/$issue_num/timeline --jq '
+              [.[] | select(.event == "cross-referenced") |
+               select(.source.issue.pull_request.merged_at)] |
+              .[0].source.issue.number // empty')
 
             if [[ -n "$closed_by_pr" ]]; then
               issue_authors="$issue_authors$login"$'\n'
