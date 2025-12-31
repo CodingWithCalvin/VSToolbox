@@ -65,8 +65,10 @@ public partial class App : Application
     private Window? _window;
     private AppWindow? _appWindow;
     private TrayIconService? _trayIconService;
+    private SettingsService? _settingsService;
 
     public Window? MainWindow => _window;
+    public SettingsService Settings => _settingsService ??= new SettingsService();
 
     public App()
     {
@@ -122,7 +124,11 @@ public partial class App : Application
         // Set window size and position to bottom-right
         PositionWindowBottomRight(540, 600);
 
-        _window.Activate();
+        // Only show window if not starting minimized
+        if (!Settings.StartMinimized)
+        {
+            _window.Activate();
+        }
     }
 
     private void ConfigureCustomTitleBar()
@@ -178,11 +184,21 @@ public partial class App : Application
 
     private void OnAppWindowClosing(AppWindow sender, AppWindowClosingEventArgs args)
     {
-        // Prevent window from closing - hide it instead
-        args.Cancel = true;
+        if (Settings.CloseToTray)
+        {
+            // Prevent window from closing - hide it instead
+            args.Cancel = true;
 
-        // Hide the window
-        _appWindow?.Hide();
+            // Hide the window
+            _appWindow?.Hide();
+        }
+        else
+        {
+            // Actually close the app
+            _trayIconService?.Dispose();
+            _mutex?.ReleaseMutex();
+            _mutex?.Dispose();
+        }
     }
 
     private void OnNavigationFailed(object sender, NavigationFailedEventArgs e)

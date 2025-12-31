@@ -16,13 +16,33 @@ public sealed partial class MainPage : Page
     private static readonly SolidColorBrush TransparentBrush = new(Colors.Transparent);
     private static readonly SolidColorBrush HoverBackgroundBrush = new(Color.FromArgb(20, 138, 43, 226));
 
+    private readonly SettingsService _settingsService = new();
+    private bool _isInitializingSettings;
+
     public MainPage()
     {
         InitializeComponent();
         ViewModel = new MainViewModel();
+        InitializeSettings();
     }
 
     public MainViewModel ViewModel { get; }
+
+    private void InitializeSettings()
+    {
+        _isInitializingSettings = true;
+
+        // Sync startup setting with registry state
+        _settingsService.SyncStartupSetting();
+
+        // Load current settings into toggles
+        LaunchOnStartupToggle.IsOn = _settingsService.LaunchOnStartup;
+        StartMinimizedToggle.IsOn = _settingsService.StartMinimized;
+        MinimizeToTrayToggle.IsOn = _settingsService.MinimizeToTray;
+        CloseToTrayToggle.IsOn = _settingsService.CloseToTray;
+
+        _isInitializingSettings = false;
+    }
 
     private async void OnPageLoaded(object sender, RoutedEventArgs e)
     {
@@ -188,13 +208,18 @@ public sealed partial class MainPage : Page
 
     private void OnMinimizeClick(object sender, RoutedEventArgs e)
     {
-        var window = App.Current as App;
         var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(((App)Application.Current).MainWindow);
         var windowId = Win32Interop.GetWindowIdFromWindow(hwnd);
         var appWindow = AppWindow.GetFromWindowId(windowId);
 
-        if (appWindow.Presenter is OverlappedPresenter presenter)
+        if (_settingsService.MinimizeToTray)
         {
+            // Hide to system tray
+            appWindow.Hide();
+        }
+        else if (appWindow.Presenter is OverlappedPresenter presenter)
+        {
+            // Normal minimize
             presenter.Minimize();
         }
     }
@@ -205,7 +230,39 @@ public sealed partial class MainPage : Page
         var windowId = Win32Interop.GetWindowIdFromWindow(hwnd);
         var appWindow = AppWindow.GetFromWindowId(windowId);
 
-        // This will trigger the Closing event which hides instead of closes
-        appWindow.Hide();
+        if (_settingsService.CloseToTray)
+        {
+            // Hide to system tray
+            appWindow.Hide();
+        }
+        else
+        {
+            // Actually close the app
+            Application.Current.Exit();
+        }
+    }
+
+    private void OnLaunchOnStartupToggled(object sender, RoutedEventArgs e)
+    {
+        if (_isInitializingSettings) return;
+        _settingsService.LaunchOnStartup = LaunchOnStartupToggle.IsOn;
+    }
+
+    private void OnStartMinimizedToggled(object sender, RoutedEventArgs e)
+    {
+        if (_isInitializingSettings) return;
+        _settingsService.StartMinimized = StartMinimizedToggle.IsOn;
+    }
+
+    private void OnMinimizeToTrayToggled(object sender, RoutedEventArgs e)
+    {
+        if (_isInitializingSettings) return;
+        _settingsService.MinimizeToTray = MinimizeToTrayToggle.IsOn;
+    }
+
+    private void OnCloseToTrayToggled(object sender, RoutedEventArgs e)
+    {
+        if (_isInitializingSettings) return;
+        _settingsService.CloseToTray = CloseToTrayToggle.IsOn;
     }
 }
