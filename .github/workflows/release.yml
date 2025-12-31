@@ -24,7 +24,7 @@ jobs:
 
     strategy:
       matrix:
-        platform: [x64, x86, arm64]
+        platform: [x64, arm64]
 
     outputs:
       version: ${{ steps.version.outputs.VERSION }}
@@ -47,18 +47,9 @@ jobs:
           echo "VERSION=$version" >> $env:GITHUB_OUTPUT
           echo "Version: $version"
 
-      - name: Update version in manifest
-        shell: pwsh
-        run: |
-          $manifest = "src/CodingWithCalvin.VSToolbox/Package.appxmanifest"
-          $content = Get-Content $manifest -Raw
-          $content = $content -replace 'Version="[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+"', "Version=`"${{ steps.version.outputs.VERSION }}.0`""
-          Set-Content $manifest $content
-
       - name: Restore dependencies
         run: dotnet restore ${{ env.PROJECT_PATH }}
 
-      # Build portable (self-contained) executable
       - name: Build portable
         run: |
           dotnet publish ${{ env.PROJECT_PATH }} `
@@ -76,39 +67,11 @@ jobs:
         run: |
           Compress-Archive -Path ./artifacts/portable/${{ matrix.platform }}/* -DestinationPath ./artifacts/${{ env.APP_NAME }}-${{ steps.version.outputs.VERSION }}-${{ matrix.platform }}-portable.zip
 
-      # Build MSIX package
-      - name: Build MSIX
-        run: |
-          dotnet publish ${{ env.PROJECT_PATH }} `
-            --configuration Release `
-            --runtime win-${{ matrix.platform }} `
-            -p:Platform=${{ matrix.platform }} `
-            -p:WindowsPackageType=MSIX `
-            -p:AppxPackageDir=./artifacts/msix/${{ matrix.platform }}/ `
-            -p:AppxBundle=Never `
-            -p:UapAppxPackageBuildMode=SideloadOnly `
-            -p:GenerateAppxPackageOnBuild=true
-
-      - name: Find and rename MSIX
-        shell: pwsh
-        run: |
-          $msix = Get-ChildItem -Path ./artifacts/msix/${{ matrix.platform }} -Filter *.msix -Recurse | Select-Object -First 1
-          if ($msix) {
-            Copy-Item $msix.FullName "./artifacts/${{ env.APP_NAME }}-${{ steps.version.outputs.VERSION }}-${{ matrix.platform }}.msix"
-          }
-
       - name: Upload portable artifact
         uses: actions/upload-artifact@v4
         with:
           name: portable-${{ matrix.platform }}
           path: ./artifacts/${{ env.APP_NAME }}-${{ steps.version.outputs.VERSION }}-${{ matrix.platform }}-portable.zip
-
-      - name: Upload MSIX artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: msix-${{ matrix.platform }}
-          path: ./artifacts/${{ env.APP_NAME }}-${{ steps.version.outputs.VERSION }}-${{ matrix.platform }}.msix
-          if-no-files-found: warn
 
   release:
     needs: [changelog, build]
@@ -134,37 +97,6 @@ jobs:
           makeLatest: true
           tag: ${{ github.ref_name }}
           prerelease: ${{ contains(github.ref_name, '-') }}
-
-  # TODO: Enable Microsoft Store submission once secrets are configured
-  # store:
-  #   needs: [build, release]
-  #   runs-on: windows-latest
-  #   if: ${{ !contains(github.ref_name, '-') }}  # Skip for pre-releases
-  #
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
-  #
-  #     - name: Download MSIX artifacts
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         pattern: msix-*
-  #         path: msix-packages
-  #         merge-multiple: true
-  #
-  #     - name: List MSIX packages
-  #       shell: pwsh
-  #       run: Get-ChildItem -Path msix-packages -Recurse
-  #
-  #     - name: Submit to Microsoft Store
-  #       uses: microsoft/store-submission@v1
-  #       with:
-  #         command: publish
-  #         productId: ${{ secrets.STORE_PRODUCT_ID }}
-  #         tenantId: ${{ secrets.AZURE_TENANT_ID }}
-  #         clientId: ${{ secrets.AZURE_CLIENT_ID }}
-  #         clientSecret: ${{ secrets.AZURE_CLIENT_SECRET }}
-  #         packagePath: msix-packages/
 
   notify-bluesky:
     needs: [release]
