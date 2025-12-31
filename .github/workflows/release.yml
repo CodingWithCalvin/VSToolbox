@@ -104,7 +104,9 @@ jobs:
     uses: CodingWithCalvin/.github/.github/workflows/bluesky-post.yml@main
     with:
       post_text: |
-        🚀 VSToolbox v${{ needs.release.outputs.version }} has been released!
+        🚀 Visual Studio Toolbox v${{ needs.release.outputs.version }} released!
+
+        Visual Studio Toolbox is a sleek system tray application for Windows that helps you manage all your Visual Studio installations in one place.
 
         [Check out the release notes here!](https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }})
     secrets:
@@ -117,7 +119,9 @@ jobs:
     uses: CodingWithCalvin/.github/.github/workflows/linkedin-post.yml@main
     with:
       post_text: |
-        🚀 VSToolbox v${{ needs.release.outputs.version }} has been released!
+        🚀 Visual Studio Toolbox v${{ needs.release.outputs.version }} released!
+
+        Visual Studio Toolbox is a sleek system tray application for Windows that helps you manage all your Visual Studio installations in one place.
 
         Check out the release notes here: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}
     secrets:
