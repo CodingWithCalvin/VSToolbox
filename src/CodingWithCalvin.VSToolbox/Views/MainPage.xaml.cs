@@ -2,6 +2,7 @@ using CodingWithCalvin.VSToolbox.Core.Models;
 using CodingWithCalvin.VSToolbox.Services;
 using CodingWithCalvin.VSToolbox.ViewModels;
 using Microsoft.UI;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
@@ -25,6 +26,10 @@ public sealed partial class MainPage : Page
 
     private async void OnPageLoaded(object sender, RoutedEventArgs e)
     {
+        // Set the title bar drag region
+        var window = ((App)Application.Current).MainWindow;
+        window?.SetTitleBar(AppTitleBar);
+
         await ViewModel.LoadInstancesCommand.ExecuteAsync(null);
     }
 
@@ -163,5 +168,44 @@ public sealed partial class MainPage : Page
         {
             button.Opacity = 0.6;
         }
+    }
+
+    private void OnTabChanged(object sender, RoutedEventArgs e)
+    {
+        // Skip if controls aren't loaded yet
+        if (InstalledContent is null || SettingsContent is null || RefreshButton is null)
+            return;
+
+        if (sender is not RadioButton radioButton)
+            return;
+
+        var isInstalledTab = radioButton == InstalledTab;
+
+        InstalledContent.Visibility = isInstalledTab ? Visibility.Visible : Visibility.Collapsed;
+        SettingsContent.Visibility = isInstalledTab ? Visibility.Collapsed : Visibility.Visible;
+        RefreshButton.Visibility = isInstalledTab ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    private void OnMinimizeClick(object sender, RoutedEventArgs e)
+    {
+        var window = App.Current as App;
+        var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(((App)Application.Current).MainWindow);
+        var windowId = Win32Interop.GetWindowIdFromWindow(hwnd);
+        var appWindow = AppWindow.GetFromWindowId(windowId);
+
+        if (appWindow.Presenter is OverlappedPresenter presenter)
+        {
+            presenter.Minimize();
+        }
+    }
+
+    private void OnCloseClick(object sender, RoutedEventArgs e)
+    {
+        var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(((App)Application.Current).MainWindow);
+        var windowId = Win32Interop.GetWindowIdFromWindow(hwnd);
+        var appWindow = AppWindow.GetFromWindowId(windowId);
+
+        // This will trigger the Closing event which hides instead of closes
+        appWindow.Hide();
     }
 }
