@@ -135,38 +135,39 @@ jobs:
           tag: ${{ github.ref_name }}
           prerelease: ${{ contains(github.ref_name, '-') }}
 
-  store:
-    needs: [build, release]
-    runs-on: windows-latest
-    if: ${{ !contains(github.ref_name, '-') }}  # Skip for pre-releases
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Download MSIX artifacts
-        uses: actions/download-artifact@v4
-        with:
-          pattern: msix-*
-          path: msix-packages
-          merge-multiple: true
-
-      - name: List MSIX packages
-        shell: pwsh
-        run: Get-ChildItem -Path msix-packages -Recurse
-
-      - name: Submit to Microsoft Store
-        uses: microsoft/store-submission@v1
-        with:
-          command: publish
-          productId: ${{ secrets.STORE_PRODUCT_ID }}
-          tenantId: ${{ secrets.AZURE_TENANT_ID }}
-          clientId: ${{ secrets.AZURE_CLIENT_ID }}
-          clientSecret: ${{ secrets.AZURE_CLIENT_SECRET }}
-          packagePath: msix-packages/
+  # TODO: Enable Microsoft Store submission once secrets are configured
+  # store:
+  #   needs: [build, release]
+  #   runs-on: windows-latest
+  #   if: ${{ !contains(github.ref_name, '-') }}  # Skip for pre-releases
+  #
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+  #
+  #     - name: Download MSIX artifacts
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         pattern: msix-*
+  #         path: msix-packages
+  #         merge-multiple: true
+  #
+  #     - name: List MSIX packages
+  #       shell: pwsh
+  #       run: Get-ChildItem -Path msix-packages -Recurse
+  #
+  #     - name: Submit to Microsoft Store
+  #       uses: microsoft/store-submission@v1
+  #       with:
+  #         command: publish
+  #         productId: ${{ secrets.STORE_PRODUCT_ID }}
+  #         tenantId: ${{ secrets.AZURE_TENANT_ID }}
+  #         clientId: ${{ secrets.AZURE_CLIENT_ID }}
+  #         clientSecret: ${{ secrets.AZURE_CLIENT_SECRET }}
+  #         packagePath: msix-packages/
 
   notify-bluesky:
-    needs: [release, store]
+    needs: [release]
     if: ${{ !contains(github.ref_name, '-') }}
     uses: CodingWithCalvin/.github/.github/workflows/bluesky-post.yml@main
     with:
@@ -174,14 +175,12 @@ jobs:
         🚀 VSToolbox v${{ needs.release.outputs.version }} has been released!
 
         [Check out the release notes here!](https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }})
-
-        Get it from the Microsoft Store or download directly from GitHub!
     secrets:
       BLUESKY_USERNAME: ${{ secrets.BLUESKY_USERNAME }}
       BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
 
   notify-linkedin:
-    needs: [release, store]
+    needs: [release]
     if: ${{ !contains(github.ref_name, '-') }}
     uses: CodingWithCalvin/.github/.github/workflows/linkedin-post.yml@main
     with:
@@ -189,7 +188,5 @@ jobs:
         🚀 VSToolbox v${{ needs.release.outputs.version }} has been released!
 
         Check out the release notes here: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}
-
-        Get it from the Microsoft Store or download directly from GitHub!
     secrets:
       LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
