@@ -15,6 +15,7 @@ public sealed class LaunchableInstance
     public string BuildNumber => Instance.BuildNumber;
     public string InstallationPath => Instance.InstallationPath;
     public bool IsPrerelease => Instance.IsPrerelease;
+    public string ChannelType => Instance.ChannelType;
     public string? IconPath => Instance.IconPath;
     public bool CanLaunch => Instance.CanLaunch;
 

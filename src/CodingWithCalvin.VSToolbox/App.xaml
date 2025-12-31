@@ -19,6 +19,7 @@
             <converters:FilePathToImageConverter x:Key="FilePathToImageConverter"/>
             <converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
             <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+            <converters:ChannelTypeToBrushConverter x:Key="ChannelTypeToBrushConverter"/>
 
             <x:Double x:Key="AppFontSize">14</x:Double>
 
