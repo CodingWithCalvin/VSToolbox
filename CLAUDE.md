@@ -1,0 +1,99 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Critical Rules
+
+**These rules override all other instructions:**
+
+1. **NEVER commit directly to main** - Always create a feature branch and submit a pull request
+2. **Conventional commits** - Format: `type(scope): description`
+3. **GitHub Issues for TODOs** - Use `gh` CLI to manage issues, no local TODO files. Use conventional commit format for issue titles
+4. **Pull Request titles** - Use conventional commit format (same as commits)
+5. **Branch naming** - Use format: `type/short-description` (e.g., `feat/settings-dialog`)
+6. **Working an issue** - Always create a new branch from an updated main branch
+7. **Check branch status before pushing** - Verify the remote tracking branch still exists. If a PR was merged/deleted, create a new branch from main instead
+8. **WinUI 3 for all UI** - All UI must use WinUI 3/XAML with modern styling (Fluent Design, theme resources, no hardcoded colors except brand purple #68217A)
+
+---
+
+### GitHub CLI Commands
+
+```bash
+gh issue list                    # List open issues
+gh issue view <number>           # View details
+gh issue create --title "type(scope): description" --body "..."
+gh issue close <number>
+```
+
+### Conventional Commit Types
+
+| Type | Description |
+|------|-------------|
+| `feat` | New feature |
+| `fix` | Bug fix |
+| `docs` | Documentation only |
+| `refactor` | Code change that neither fixes a bug nor adds a feature |
+| `test` | Adding or updating tests |
+| `chore` | Maintenance tasks |
+| `ci` | CI/CD changes |
+
+---
+
+## Project Overview
+
+VSToolbox is a WinUI 3 desktop application for managing Visual Studio installations. It provides a system tray application to quickly launch VS instances, open developer command prompts, and access installation folders.
+
+## Build Commands
+
+```bash
+# Build the project
+dotnet build src/CodingWithCalvin.VSToolbox/CodingWithCalvin.VSToolbox.csproj
+
+# Run the application
+dotnet run --project src/CodingWithCalvin.VSToolbox/CodingWithCalvin.VSToolbox.csproj
+```
+
+## Architecture
+
+### Project Structure
+
+- **CodingWithCalvin.VSToolbox** - Main WinUI 3 application
+- **CodingWithCalvin.VSToolbox.Core** - Core library with models and services
+
+### Key Components
+
+- `App.xaml.cs` - Application entry point, window management, single-instance support
+- `MainPage.xaml` - Main UI with Installed/Settings tabs
+- `MainViewModel.cs` - ViewModel for VS instance discovery and launching
+- `TrayIconService.cs` - System tray icon management
+- `SettingsService.cs` - User settings persistence (JSON file in %LOCALAPPDATA%)
+
+### Features
+
+- Discovers installed Visual Studio instances via vswhere
+- Launch VS instances directly
+- Open VS Developer Command Prompt (CMD/PowerShell)
+- Open installation folder in Explorer
+- System tray integration with show/hide support
+- Configurable startup and minimize/close behavior
+
+## Technology Stack
+
+- .NET 10.0 (Preview)
+- WinUI 3 / Windows App SDK
+- Windows 10.0.19041.0 target
+- Unpackaged deployment (WindowsPackageType=None)
+
+## UI Guidelines
+
+- Purple theme color: `#68217A`
+- Square window corners (no rounded corners)
+- Custom title bar with minimize/close buttons (no maximize)
+- System tray integration
+
+## Scripts
+
+Helper scripts in `scripts/` folder:
+- `extract_icon.ps1` - Extract icon from VS devenv.exe
+- `extract_large_icon.ps1` - Extract large (256x256) icon from VS devenv.exe

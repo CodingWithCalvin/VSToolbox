@@ -66,3 +66,5 @@ PublishScripts/
 # Local settings
 appsettings.*.json
 !appsettings.Development.json
+
+CLAUDE.local.md
