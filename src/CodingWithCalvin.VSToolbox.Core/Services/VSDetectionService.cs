@@ -45,7 +45,7 @@ public sealed class VSDetectionService : IVSDetectionService
         var startInfo = new ProcessStartInfo
         {
             FileName = VSWherePath,
-            Arguments = "-all -prerelease -products * -format json -utf8",
+            Arguments = "-all -prerelease -products \"*\" -format json -utf8",
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             UseShellExecute = false,
