@@ -46,19 +46,24 @@ public sealed class TrayIconService : IDisposable
 
     private static Icon? GetAppIcon()
     {
-        // Try to get the app's icon from the executable
-        var exePath = Environment.ProcessPath;
-        if (!string.IsNullOrEmpty(exePath) && File.Exists(exePath))
+        // Try to load the VS icon from Assets
+        var appDir = AppContext.BaseDirectory;
+        var iconPath = Path.Combine(appDir, "Assets", "vs2026_icon.png");
+
+        if (File.Exists(iconPath))
         {
             try
             {
-                return Icon.ExtractAssociatedIcon(exePath);
+                using var bitmap = new Bitmap(iconPath);
+                var hIcon = bitmap.GetHicon();
+                return Icon.FromHandle(hIcon);
             }
             catch
             {
                 // Fall back to default
             }
         }
+
         return SystemIcons.Application;
     }
 
