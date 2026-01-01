@@ -2,78 +2,10 @@ name: Update Contributors
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Run daily at midnight UTC
-  workflow_dispatch:  # Allow manual trigger
+    - cron: '0 0 * * *'
+  workflow_dispatch:
 
 jobs:
   contributors:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.CONTRIBUTORS_TOKEN }}
-
-      - name: Update contributors
-        env:
-          GH_TOKEN: ${{ secrets.CONTRIBUTORS_TOKEN }}
-        run: |
-          # Fetch code contributors (exclude bots)
-          code_contributors=$(gh api repos/${{ github.repository }}/contributors --paginate --jq '.[] | select(.type != "Bot") | select(.login | test("\\[bot\\]$") | not) | .login')
-
-          # Fetch closed issues and check if they were closed by a merged PR
-          issue_authors=""
-          closed_issues=$(gh api "repos/${{ github.repository }}/issues?state=closed" --paginate -q '.[] | select(.pull_request == null) | {number, login: .user.login}')
-
-          for row in $(echo "$closed_issues" | jq -c '.'); do
-            issue_num=$(echo "$row" | jq -r '.number')
-            login=$(echo "$row" | jq -r '.login')
-
-            # Check timeline for cross-referenced merged PR that closed this issue
-            closed_by_pr=$(gh api repos/${{ github.repository }}/issues/$issue_num/timeline --jq '
-              [.[] | select(.event == "cross-referenced") |
-               select(.source.issue.pull_request.merged_at)] |
-              .[0].source.issue.number // empty')
-
-            if [[ -n "$closed_by_pr" ]]; then
-              issue_authors="$issue_authors$login"$'\n'
-            fi
-          done
-          issue_authors=$(echo "$issue_authors" | sort -u)
-
-          # Combine and deduplicate
-          all_contributors=$(echo -e "$code_contributors\n$issue_authors" | sort -u | grep -v '^$')
-
-          # Build markdown for each contributor
-          contributor_md=""
-          for login in $all_contributors; do
-            # Skip bots
-            if [[ "$login" == *"[bot]" ]]; then
-              continue
-            fi
-
-            # Get user info
-            user_info=$(gh api users/$login --jq '{avatar_url, html_url}')
-            avatar=$(echo "$user_info" | jq -r '.avatar_url')
-            url=$(echo "$user_info" | jq -r '.html_url')
-
-            contributor_md="$contributor_md[![$login](${avatar}&s=64)]($url) "
-          done
-
-          # Build the contributors section
-          contrib_section="<!-- readme: contributors -start -->
-          $contributor_md
-          <!-- readme: contributors -end -->"
-
-          # Update README between the markers
-          awk -v contrib="$contrib_section" '
-            /<!-- readme: contributors -start -->/{found=1; print contrib; next}
-            /<!-- readme: contributors -end -->/{found=0; next}
-            !found{print}
-          ' README.md > README.tmp && mv README.tmp README.md
-
-      - name: Commit and push
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add README.md
-          git diff --staged --quiet || (git commit -m "docs: update contributors [skip ci]" && git push)
+    uses: CodingWithCalvin/.github/.github/workflows/contributors.yml@main
+    secrets: inherit
