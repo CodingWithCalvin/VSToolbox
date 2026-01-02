@@ -1,0 +1,13 @@
+<Solution>
+  <Configurations>
+    <Configuration Name="Debug" />
+    <Configuration Name="Release" />
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/src/">
+    <Project Path="CodingWithCalvin.VSToolbox/CodingWithCalvin.VSToolbox.csproj" />
+    <Project Path="CodingWithCalvin.VSToolbox.Core/CodingWithCalvin.VSToolbox.Core.csproj" />
+  </Folder>
+</Solution>
