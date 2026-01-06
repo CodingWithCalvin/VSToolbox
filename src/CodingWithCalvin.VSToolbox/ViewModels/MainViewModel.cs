@@ -12,18 +12,20 @@ public partial class MainViewModel : BaseViewModel
     private readonly IVSHiveService _hiveService;
     private readonly IconExtractionService _iconService;
     private readonly WindowsTerminalService _terminalService;
+    private readonly IVSCodeDetectionService _vsCodeDetectionService;
 
-    public MainViewModel() : this(new VSDetectionService(), new VSLaunchService(), new VSHiveService(), new IconExtractionService(), new WindowsTerminalService())
+    public MainViewModel() : this(new VSDetectionService(), new VSLaunchService(), new VSHiveService(), new IconExtractionService(), new WindowsTerminalService(), new VSCodeDetectionService())
     {
     }
 
-    public MainViewModel(IVSDetectionService detectionService, IVSLaunchService launchService, IVSHiveService hiveService, IconExtractionService iconService, WindowsTerminalService terminalService)
+    public MainViewModel(IVSDetectionService detectionService, IVSLaunchService launchService, IVSHiveService hiveService, IconExtractionService iconService, WindowsTerminalService terminalService, IVSCodeDetectionService vsCodeDetectionService)
     {
         _detectionService = detectionService;
         _launchService = launchService;
         _hiveService = hiveService;
         _iconService = iconService;
         _terminalService = terminalService;
+        _vsCodeDetectionService = vsCodeDetectionService;
         Title = "VSToolbox";
         StatusText = "Loading...";
     }
@@ -44,29 +46,36 @@ public partial class MainViewModel : BaseViewModel
     private async Task LoadInstancesAsync()
     {
         IsLoading = true;
-        StatusText = "Scanning for Visual Studio installations...";
+        StatusText = "Scanning for Visual Studio and VS Code installations...";
 
         try
         {
-            if (!_detectionService.IsVSWhereAvailable())
+            var allInstances = new List<VisualStudioInstance>();
+
+            if (_detectionService.IsVSWhereAvailable())
             {
-                StatusText = "vswhere.exe not found. Please install Visual Studio.";
-                return;
+                var vsInstances = await _detectionService.GetInstalledInstancesAsync();
+                allInstances.AddRange(vsInstances);
             }
 
-            var instances = await _detectionService.GetInstalledInstancesAsync();
-            _iconService.ExtractAndCacheIcons(instances);
+            var vsCodeInstances = await _vsCodeDetectionService.GetInstalledInstancesAsync();
+            allInstances.AddRange(vsCodeInstances);
 
-            // Build flattened list of launchable instances (each hive as separate entry)
+            _iconService.ExtractAndCacheIcons(allInstances);
+
             var launchables = new List<LaunchableInstance>();
-            foreach (var instance in instances)
+            foreach (var instance in allInstances)
             {
+                if (instance.Version == VSVersion.VSCode)
+                {
+                    launchables.Add(new LaunchableInstance { Instance = instance });
+                    continue;
+                }
+
                 var hives = _hiveService.GetHivesForInstance(instance);
 
-                // Add the default instance
                 launchables.Add(new LaunchableInstance { Instance = instance });
 
-                // Add non-default hives as separate entries
                 foreach (var hive in hives.Where(h => !h.IsDefault))
                 {
                     launchables.Add(new LaunchableInstance { Instance = instance, Hive = hive });
@@ -79,12 +88,17 @@ public partial class MainViewModel : BaseViewModel
                 Instances.Add(launchable);
             }
 
-            StatusText = launchables.Count switch
-            {
-                0 => "No Visual Studio instances found.",
-                1 => "1 Visual Studio instance found.",
-                _ => $"{launchables.Count} Visual Studio instances found."
-            };
+            var totalVS = allInstances.Count(i => i.Version != VSVersion.VSCode);
+            var totalVSCode = allInstances.Count(i => i.Version == VSVersion.VSCode);
+
+            StatusText = totalVSCode > 0
+                ? $"{totalVS} Visual Studio + {totalVSCode} VS Code instance{(totalVSCode != 1 ? "s" : "")} found."
+                : launchables.Count switch
+                {
+                    0 => "No Visual Studio instances found.",
+                    1 => "1 Visual Studio instance found.",
+                    _ => $"{launchables.Count} Visual Studio instances found."
+                };
         }
         catch (Exception ex)
         {

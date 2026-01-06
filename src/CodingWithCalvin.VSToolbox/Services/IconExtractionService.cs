@@ -40,7 +40,13 @@ public sealed class IconExtractionService
             }
         }
 
-        // For Build Tools or when ProductPath extraction fails, try common VS executables
+        // For VS Code instances, we skip icon extraction as they don't have a consistent icon location
+        if (instance.Version == VSVersion.VSCode)
+        {
+            return null;
+        }
+
+        // For other instances, try common VS executables
         var alternativePaths = new[]
         {
             Path.Combine(instance.InstallationPath, "Common7", "IDE", "devenv.exe"),

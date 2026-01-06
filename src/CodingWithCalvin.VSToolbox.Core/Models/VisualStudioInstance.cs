@@ -25,9 +25,20 @@ public sealed class VisualStudioInstance
 
     private static string ParseChannelType(string channelId)
     {
-        // ChannelId format: VisualStudio.{majorVersion}.{channel}
-        // e.g., VisualStudio.17.Release, VisualStudio.17.Preview, VisualStudio.17.Canary
         var parts = channelId.Split('.');
+        if (parts.Length < 2)
+            return "Unknown";
+
+        if (parts[0] == "VSCode")
+        {
+            return parts[^1] switch
+            {
+                "Stable" => "Stable",
+                "Insiders" => "Insiders",
+                _ => parts[^1]
+            };
+        }
+
         if (parts.Length < 3)
             return "Unknown";
 
@@ -42,9 +53,13 @@ public sealed class VisualStudioInstance
     }
 
     public bool CanLaunch => !string.IsNullOrEmpty(ProductPath) &&
-        ProductPath.EndsWith("devenv.exe", StringComparison.OrdinalIgnoreCase);
+        (ProductPath.EndsWith("devenv.exe", StringComparison.OrdinalIgnoreCase) ||
+         ProductPath.EndsWith("Code.exe", StringComparison.OrdinalIgnoreCase) ||
+         ProductPath.EndsWith("Code - Insiders.exe", StringComparison.OrdinalIgnoreCase));
 
-    public string ShortDisplayName => $"Visual Studio {GetVersionYear()} {Sku}";
+    public string ShortDisplayName => Version == VSVersion.VSCode 
+        ? (Sku == VSSku.VSCodeInsiders ? "VS Code Insiders" : "VS Code")
+        : $"Visual Studio {GetVersionYear()} {Sku}";
 
     public string VersionYear => GetVersionYear();
 
@@ -53,6 +68,7 @@ public sealed class VisualStudioInstance
         VSVersion.VS2019 => "2019",
         VSVersion.VS2022 => "2022",
         VSVersion.VS2026 => "2026",
+        VSVersion.VSCode => "Code",
         _ => "Unknown"
     };
 }

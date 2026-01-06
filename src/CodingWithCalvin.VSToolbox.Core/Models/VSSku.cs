@@ -6,5 +6,7 @@ public enum VSSku
     Community,
     Professional,
     Enterprise,
-    BuildTools
+    BuildTools,
+    VSCode,
+    VSCodeInsiders
 }
