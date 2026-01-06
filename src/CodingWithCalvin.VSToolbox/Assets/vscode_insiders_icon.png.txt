@@ -1,0 +1,14 @@
+VS Code Insiders Icon Placeholder
+==================================
+
+This file is a placeholder for the Visual Studio Code Insiders icon.
+
+To add the actual icon:
+1. Download from: https://code.visualstudio.com/insiders
+2. Extract the icon from 'Code - Insiders.exe' or download the official icon
+3. Save it as 'vscode_insiders_icon.png' in this directory (replace this .txt file)
+4. The icon should be at least 48x48 pixels (PNG format)
+
+Recommended size: 64x64 or 128x128 pixels
+
+The application will automatically extract the icon from Code - Insiders.exe if this file is not present.

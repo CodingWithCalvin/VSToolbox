@@ -66,28 +66,63 @@ public sealed partial class MainPage : Page
         if (sender is not MenuFlyout flyout)
             return;
 
-        // Get the launchable instance from the button's DataContext
         var button = flyout.Target as Button;
         if (button?.DataContext is not LaunchableInstance instance)
             return;
 
         flyout.Items.Clear();
 
-        // Open Explorer
-        var openExplorerItem = new MenuFlyoutItem
+        if (instance.Instance.Version == VSVersion.VSCode)
+        {
+            var openExtensionsItem = new MenuFlyoutItem
+            {
+                Text = "Open Extensions Folder",
+                Icon = new FontIcon { Glyph = "\uE74C", Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 122, 204)) }
+            };
+            openExtensionsItem.Click += (s, args) => ViewModel.OpenVSCodeExtensionsFolderCommand.Execute(instance);
+            flyout.Items.Add(openExtensionsItem);
+
+            var openNewWindowItem = new MenuFlyoutItem
+            {
+                Text = "Open New Window",
+                Icon = new FontIcon { Glyph = "\uE8A7", Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 122, 204)) }
+            };
+            openNewWindowItem.Click += (s, args) => ViewModel.LaunchInstanceCommand.Execute(instance);
+            flyout.Items.Add(openNewWindowItem);
+
+            flyout.Items.Add(new MenuFlyoutSeparator());
+
+            var openExplorerItem = new MenuFlyoutItem
+            {
+                Text = "Open Installation Folder",
+                Icon = new FontIcon { Glyph = "\uE838", Foreground = new SolidColorBrush(Color.FromArgb(255, 234, 179, 8)) }
+            };
+            openExplorerItem.Click += (s, args) => ViewModel.OpenInstanceFolderCommand.Execute(instance);
+            flyout.Items.Add(openExplorerItem);
+
+            var appDataItem = new MenuFlyoutItem
+            {
+                Text = "Open VS Code Data Folder",
+                Icon = new FontIcon { Glyph = "\uE8B7", Foreground = new SolidColorBrush(Color.FromArgb(255, 139, 92, 246)) }
+            };
+            appDataItem.Click += (s, args) => ViewModel.OpenAppDataFolderCommand.Execute(instance);
+            flyout.Items.Add(appDataItem);
+
+            return;
+        }
+
+        var openExplorerItemVS = new MenuFlyoutItem
         {
             Text = "Open Explorer",
             Icon = new FontIcon { Glyph = "\uE838", Foreground = new SolidColorBrush(Color.FromArgb(255, 234, 179, 8)) }
         };
-        openExplorerItem.Click += (s, args) => ViewModel.OpenInstanceFolderCommand.Execute(instance);
-        flyout.Items.Add(openExplorerItem);
+        openExplorerItemVS.Click += (s, args) => ViewModel.OpenInstanceFolderCommand.Execute(instance);
+        flyout.Items.Add(openExplorerItemVS);
 
-        // Terminal profiles grouped by shell type
         var terminalProfiles = ViewModel.TerminalProfiles;
         var cmdProfiles = terminalProfiles.Where(p => p.ShellType == ShellType.Cmd).ToList();
         var pwshProfiles = terminalProfiles.Where(p => p.ShellType == ShellType.PowerShell).ToList();
 
-        // CMD: submenu if profiles exist, otherwise direct launch
         if (cmdProfiles.Count > 0)
         {
             var cmdSubmenu = new MenuFlyoutSubItem
@@ -115,7 +150,6 @@ public sealed partial class MainPage : Page
             flyout.Items.Add(cmdItem);
         }
 
-        // PowerShell: submenu if profiles exist, otherwise direct launch
         if (pwshProfiles.Count > 0)
         {
             var pwshSubmenu = new MenuFlyoutSubItem
@@ -143,17 +177,51 @@ public sealed partial class MainPage : Page
             flyout.Items.Add(pwshItem);
         }
 
-        // Separator
         flyout.Items.Add(new MenuFlyoutSeparator());
 
-        // Open Local AppData
-        var appDataItem = new MenuFlyoutItem
+        var installerSubmenu = new MenuFlyoutSubItem
+        {
+            Text = "Visual Studio Installer",
+            Icon = new FontIcon { Glyph = "\uE895", Foreground = new SolidColorBrush(Color.FromArgb(255, 104, 33, 122)) }
+        };
+
+        var modifyItem = new MenuFlyoutItem
+        {
+            Text = "Modify Installation",
+            Icon = new FontIcon { Glyph = "\uE70F" }
+        };
+        modifyItem.Click += (s, args) => ViewModel.ModifyVisualStudioInstanceCommand.Execute(instance);
+        installerSubmenu.Items.Add(modifyItem);
+
+        var updateItem = new MenuFlyoutItem
+        {
+            Text = "Update",
+            Icon = new FontIcon { Glyph = "\uE896" }
+        };
+        updateItem.Click += (s, args) => ViewModel.UpdateVisualStudioInstanceCommand.Execute(instance);
+        installerSubmenu.Items.Add(updateItem);
+
+        installerSubmenu.Items.Add(new MenuFlyoutSeparator());
+
+        var openInstallerItem = new MenuFlyoutItem
+        {
+            Text = "Open Installer",
+            Icon = new FontIcon { Glyph = "\uE8E1" }
+        };
+        openInstallerItem.Click += (s, args) => ViewModel.LaunchVisualStudioInstallerCommand.Execute(instance);
+        installerSubmenu.Items.Add(openInstallerItem);
+
+        flyout.Items.Add(installerSubmenu);
+
+        flyout.Items.Add(new MenuFlyoutSeparator());
+
+        var appDataItemVS = new MenuFlyoutItem
         {
             Text = "Open Local AppData",
             Icon = new FontIcon { Glyph = "\uE8B7", Foreground = new SolidColorBrush(Color.FromArgb(255, 139, 92, 246)) }
         };
-        appDataItem.Click += (s, args) => ViewModel.OpenAppDataFolderCommand.Execute(instance);
-        flyout.Items.Add(appDataItem);
+        appDataItemVS.Click += (s, args) => ViewModel.OpenAppDataFolderCommand.Execute(instance);
+        flyout.Items.Add(appDataItemVS);
     }
 
     private void OnRowPointerEntered(object sender, PointerRoutedEventArgs e)

@@ -11,6 +11,10 @@ public sealed class IconExtractionService
         "VSToolbox",
         "IconCache");
 
+    private static readonly string AssetsDirectory = Path.Combine(
+        AppContext.BaseDirectory,
+        "Assets");
+
     public void ExtractAndCacheIcons(IEnumerable<VisualStudioInstance> instances)
     {
         Directory.CreateDirectory(CacheDirectory);
@@ -31,7 +35,37 @@ public sealed class IconExtractionService
             return cachePath;
         }
 
-        // Try to extract from ProductPath (devenv.exe)
+        if (instance.Version == VSVersion.VSCode)
+        {
+            var iconName = instance.Sku == VSSku.VSCodeInsiders
+                ? "vscode_insiders_icon.png"
+                : "vscode_icon.png";
+            
+            var assetIconPath = Path.Combine(AssetsDirectory, iconName);
+            if (File.Exists(assetIconPath))
+            {
+                try
+                {
+                    File.Copy(assetIconPath, cachePath, overwrite: true);
+                    return cachePath;
+                }
+                catch
+                {
+                    // Fall through to extract from executable
+                }
+            }
+
+            if (!string.IsNullOrEmpty(instance.ProductPath) && File.Exists(instance.ProductPath))
+            {
+                if (TryExtractIcon(instance.ProductPath, cachePath))
+                {
+                    return cachePath;
+                }
+            }
+
+            return assetIconPath;
+        }
+
         if (!string.IsNullOrEmpty(instance.ProductPath) && File.Exists(instance.ProductPath))
         {
             if (TryExtractIcon(instance.ProductPath, cachePath))
@@ -40,13 +74,6 @@ public sealed class IconExtractionService
             }
         }
 
-        // For VS Code instances, we skip icon extraction as they don't have a consistent icon location
-        if (instance.Version == VSVersion.VSCode)
-        {
-            return null;
-        }
-
-        // For other instances, try common VS executables
         var alternativePaths = new[]
         {
             Path.Combine(instance.InstallationPath, "Common7", "IDE", "devenv.exe"),

@@ -219,12 +219,34 @@ public partial class MainViewModel : BaseViewModel
 
         try
         {
+            if (launchable.Instance.Version == VSVersion.VSCode)
+            {
+                var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                var vscodePath = launchable.Instance.Sku == VSSku.VSCodeInsiders
+                    ? Path.Combine(userProfile, ".vscode-insiders")
+                    : Path.Combine(userProfile, ".vscode");
+
+                if (Directory.Exists(vscodePath))
+                {
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = "explorer.exe",
+                        Arguments = $"\"{vscodePath}\"",
+                        UseShellExecute = true
+                    });
+                }
+                else
+                {
+                    StatusText = "VS Code data folder not found";
+                }
+                return;
+            }
+
             var appDataPath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "Microsoft",
                 "VisualStudio");
 
-            // Build the hive folder name
             var majorVersion = Version.Parse(launchable.Instance.InstallationVersion).Major;
             var hiveName = $"{majorVersion}.0_{launchable.Instance.InstanceId}";
             if (!string.IsNullOrEmpty(launchable.RootSuffix))
@@ -250,6 +272,136 @@ public partial class MainViewModel : BaseViewModel
         catch (Exception ex)
         {
             StatusText = $"Failed to open AppData: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private void OpenVSCodeExtensionsFolder(LaunchableInstance? launchable)
+    {
+        if (launchable is null || launchable.Instance.Version != VSVersion.VSCode) return;
+
+        try
+        {
+            var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            var extensionsPath = launchable.Instance.Sku == VSSku.VSCodeInsiders
+                ? Path.Combine(userProfile, ".vscode-insiders", "extensions")
+                : Path.Combine(userProfile, ".vscode", "extensions");
+
+            if (Directory.Exists(extensionsPath))
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = "explorer.exe",
+                    Arguments = $"\"{extensionsPath}\"",
+                    UseShellExecute = true
+                });
+            }
+            else
+            {
+                StatusText = "Extensions folder not found";
+            }
+        }
+        catch (Exception ex)
+        {
+            StatusText = $"Failed to open extensions folder: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private void LaunchVisualStudioInstaller(LaunchableInstance? launchable)
+    {
+        if (launchable is null || launchable.Instance.Version == VSVersion.VSCode) return;
+
+        try
+        {
+            var installerPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+                "Microsoft Visual Studio",
+                "Installer",
+                "vs_installer.exe");
+
+            if (File.Exists(installerPath))
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = installerPath,
+                    UseShellExecute = true
+                });
+            }
+            else
+            {
+                StatusText = "Visual Studio Installer not found";
+            }
+        }
+        catch (Exception ex)
+        {
+            StatusText = $"Failed to launch Visual Studio Installer: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private void ModifyVisualStudioInstance(LaunchableInstance? launchable)
+    {
+        if (launchable is null || launchable.Instance.Version == VSVersion.VSCode) return;
+
+        try
+        {
+            var installerPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+                "Microsoft Visual Studio",
+                "Installer",
+                "vs_installer.exe");
+
+            if (File.Exists(installerPath))
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = installerPath,
+                    Arguments = $"modify --installPath \"{launchable.Instance.InstallationPath}\"",
+                    UseShellExecute = true
+                });
+            }
+            else
+            {
+                StatusText = "Visual Studio Installer not found";
+            }
+        }
+        catch (Exception ex)
+        {
+            StatusText = $"Failed to modify Visual Studio: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private void UpdateVisualStudioInstance(LaunchableInstance? launchable)
+    {
+        if (launchable is null || launchable.Instance.Version == VSVersion.VSCode) return;
+
+        try
+        {
+            var installerPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+                "Microsoft Visual Studio",
+                "Installer",
+                "vs_installer.exe");
+
+            if (File.Exists(installerPath))
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = installerPath,
+                    Arguments = $"update --installPath \"{launchable.Instance.InstallationPath}\" --passive",
+                    UseShellExecute = true
+                });
+            }
+            else
+            {
+                StatusText = "Visual Studio Installer not found";
+            }
+        }
+        catch (Exception ex)
+        {
+            StatusText = $"Failed to update Visual Studio: {ex.Message}";
         }
     }
 

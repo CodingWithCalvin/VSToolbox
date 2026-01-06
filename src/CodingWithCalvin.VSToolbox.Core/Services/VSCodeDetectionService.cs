@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text.Json;
 using CodingWithCalvin.VSToolbox.Core.Models;
 
 namespace CodingWithCalvin.VSToolbox.Core.Services;
@@ -25,20 +26,22 @@ public sealed class VSCodeDetectionService : IVSCodeDetectionService
         if (vsCodePath is not null)
         {
             var version = GetFileVersion(vsCodePath);
-            instances.Add(CreateVSCodeInstance(vsCodePath, version, isInsiders: false));
+            var extensions = GetInstalledExtensions(isInsiders: false);
+            instances.Add(CreateVSCodeInstance(vsCodePath, version, extensions, isInsiders: false));
         }
 
         var vsCodeInsidersPath = VSCodeInsidersPaths.FirstOrDefault(File.Exists);
         if (vsCodeInsidersPath is not null)
         {
             var version = GetFileVersion(vsCodeInsidersPath);
-            instances.Add(CreateVSCodeInstance(vsCodeInsidersPath, version, isInsiders: true));
+            var extensions = GetInstalledExtensions(isInsiders: true);
+            instances.Add(CreateVSCodeInstance(vsCodeInsidersPath, version, extensions, isInsiders: true));
         }
 
         return Task.FromResult<IReadOnlyList<VisualStudioInstance>>(instances);
     }
 
-    private static VisualStudioInstance CreateVSCodeInstance(string executablePath, string version, bool isInsiders)
+    private static VisualStudioInstance CreateVSCodeInstance(string executablePath, string version, IReadOnlyList<string> extensions, bool isInsiders)
     {
         var installPath = Path.GetDirectoryName(executablePath) ?? string.Empty;
         var displayName = isInsiders ? "Visual Studio Code - Insiders" : "Visual Studio Code";
@@ -57,8 +60,50 @@ public sealed class VSCodeDetectionService : IVSCodeDetectionService
             IsPrerelease = isInsiders,
             InstallDate = GetInstallDate(executablePath),
             ChannelId = isInsiders ? "VSCode.Insiders" : "VSCode.Stable",
-            InstalledWorkloads = []
+            InstalledWorkloads = extensions
         };
+    }
+
+    private static IReadOnlyList<string> GetInstalledExtensions(bool isInsiders)
+    {
+        try
+        {
+            var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            var extensionsPath = isInsiders
+                ? Path.Combine(userProfile, ".vscode-insiders", "extensions")
+                : Path.Combine(userProfile, ".vscode", "extensions");
+
+            if (!Directory.Exists(extensionsPath))
+            {
+                return [];
+            }
+
+            var extensions = new List<string>();
+            var directories = Directory.GetDirectories(extensionsPath);
+
+            foreach (var dir in directories)
+            {
+                var dirName = Path.GetFileName(dir);
+                if (!string.IsNullOrEmpty(dirName) && !dirName.StartsWith('.'))
+                {
+                    var parts = dirName.Split('-');
+                    if (parts.Length >= 2)
+                    {
+                        var extensionName = string.Join("-", parts.Take(parts.Length - 1));
+                        if (!extensions.Contains(extensionName))
+                        {
+                            extensions.Add(extensionName);
+                        }
+                    }
+                }
+            }
+
+            return extensions.OrderBy(e => e).ToList();
+        }
+        catch
+        {
+            return [];
+        }
     }
 
     private static string GetFileVersion(string executablePath)
