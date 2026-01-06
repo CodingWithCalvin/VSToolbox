@@ -61,7 +61,7 @@ Visual Studio Toolbox is a sleek **system tray application** for Windows that he
 ### Instance List
 See all your Visual Studio and VS Code installations at a glance, including version info, build numbers, and channel badges:
 
-![Instance List](assets/instance-list.png)
+![Instance List](assets/instance-list-v2.png)
 
 ### Hover State
 Hover over any installation to highlight it with the signature purple accent:
@@ -71,7 +71,7 @@ Hover over any installation to highlight it with the signature purple accent:
 ### Quick Actions Menu
 Access powerful options for each installation - open folders, launch dev shells, manage with VS Installer, and more:
 
-![Instance Menu](assets/instance-list-menu.png)
+![Instance Menu](assets/instance-list-menu-v2.png)
 
 ### Settings
 Configure startup behavior and window preferences:
