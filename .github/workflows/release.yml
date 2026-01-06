@@ -58,7 +58,6 @@ jobs:
             --self-contained true `
             -p:PublishSingleFile=false `
             -p:PublishReadyToRun=true `
-            -p:PublishTrimmed=true `
             -p:Platform=${{ matrix.platform }} `
             --output ./artifacts/portable/${{ matrix.platform }}
 
