@@ -152,7 +152,7 @@ Contributions are welcome! Feel free to:
 ## 👥 Contributors
 
 <!-- readme: contributors -start -->
-[![CalvinAllen](https://avatars.githubusercontent.com/u/41448698?v=4&s=64)](https://github.com/CalvinAllen) [![timheuer](https://avatars.githubusercontent.com/u/4821?v=4&s=64)](https://github.com/timheuer) 
+[![CalvinAllen](https://avatars.githubusercontent.com/u/41448698?v=4&s=64)](https://github.com/CalvinAllen) [![isaacrlevin](https://avatars.githubusercontent.com/u/8878502?v=4&s=64)](https://github.com/isaacrlevin) [![timheuer](https://avatars.githubusercontent.com/u/4821?v=4&s=64)](https://github.com/timheuer) 
 <!-- readme: contributors -end -->
 
 ---
