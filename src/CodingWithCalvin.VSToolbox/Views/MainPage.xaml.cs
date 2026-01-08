@@ -74,6 +74,32 @@ public sealed partial class MainPage : Page
 
         if (instance.Instance.Version == VSVersion.VSCode)
         {
+            // Recent projects for VS Code
+            var recentProjects = ViewModel.GetRecentProjects(instance, 10);
+            if (recentProjects.Count > 0)
+            {
+                var recentSubmenu = new MenuFlyoutSubItem
+                {
+                    Text = "Recent Folders",
+                    Icon = new FontIcon { Glyph = "\uE823", Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 122, 204)) }
+                };
+
+                foreach (var project in recentProjects)
+                {
+                    var projectItem = new MenuFlyoutItem
+                    {
+                        Text = project.DisplayName,
+                        Icon = new FontIcon { Glyph = project.IsFolder ? "\uE8B7" : "\uE8A5" }
+                    };
+                    var capturedProject = project;
+                    projectItem.Click += (s, args) => ViewModel.OpenRecentProject(instance, capturedProject);
+                    recentSubmenu.Items.Add(projectItem);
+                }
+
+                flyout.Items.Add(recentSubmenu);
+                flyout.Items.Add(new MenuFlyoutSeparator());
+            }
+
             var openExtensionsItem = new MenuFlyoutItem
             {
                 Text = "Open Extensions Folder",
@@ -109,6 +135,32 @@ public sealed partial class MainPage : Page
             flyout.Items.Add(appDataItem);
 
             return;
+        }
+
+        // Recent projects for Visual Studio
+        var vsRecentProjects = ViewModel.GetRecentProjects(instance, 10);
+        if (vsRecentProjects.Count > 0)
+        {
+            var recentSubmenu = new MenuFlyoutSubItem
+            {
+                Text = "Recent Projects",
+                Icon = new FontIcon { Glyph = "\uE823", Foreground = new SolidColorBrush(Color.FromArgb(255, 104, 33, 122)) }
+            };
+
+            foreach (var project in vsRecentProjects)
+            {
+                var projectItem = new MenuFlyoutItem
+                {
+                    Text = project.DisplayName,
+                    Icon = new FontIcon { Glyph = project.IsSolution ? "\uE8A5" : "\uE8B7" }
+                };
+                var capturedProject = project;
+                projectItem.Click += (s, args) => ViewModel.OpenRecentProject(instance, capturedProject);
+                recentSubmenu.Items.Add(projectItem);
+            }
+
+            flyout.Items.Add(recentSubmenu);
+            flyout.Items.Add(new MenuFlyoutSeparator());
         }
 
         var openExplorerItemVS = new MenuFlyoutItem

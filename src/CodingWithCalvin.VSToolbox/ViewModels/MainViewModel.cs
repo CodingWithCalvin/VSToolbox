@@ -13,12 +13,13 @@ public partial class MainViewModel : BaseViewModel
     private readonly IconExtractionService _iconService;
     private readonly WindowsTerminalService _terminalService;
     private readonly IVSCodeDetectionService _vsCodeDetectionService;
+    private readonly IRecentProjectsService _recentProjectsService;
 
-    public MainViewModel() : this(new VSDetectionService(), new VSLaunchService(), new VSHiveService(), new IconExtractionService(), new WindowsTerminalService(), new VSCodeDetectionService())
+    public MainViewModel() : this(new VSDetectionService(), new VSLaunchService(), new VSHiveService(), new IconExtractionService(), new WindowsTerminalService(), new VSCodeDetectionService(), new RecentProjectsService())
     {
     }
 
-    public MainViewModel(IVSDetectionService detectionService, IVSLaunchService launchService, IVSHiveService hiveService, IconExtractionService iconService, WindowsTerminalService terminalService, IVSCodeDetectionService vsCodeDetectionService)
+    public MainViewModel(IVSDetectionService detectionService, IVSLaunchService launchService, IVSHiveService hiveService, IconExtractionService iconService, WindowsTerminalService terminalService, IVSCodeDetectionService vsCodeDetectionService, IRecentProjectsService recentProjectsService)
     {
         _detectionService = detectionService;
         _launchService = launchService;
@@ -26,6 +27,7 @@ public partial class MainViewModel : BaseViewModel
         _iconService = iconService;
         _terminalService = terminalService;
         _vsCodeDetectionService = vsCodeDetectionService;
+        _recentProjectsService = recentProjectsService;
         Title = "VSToolbox";
         StatusText = "Loading...";
     }
@@ -447,6 +449,29 @@ public partial class MainViewModel : BaseViewModel
         catch (Exception ex)
         {
             StatusText = $"Failed to launch terminal: {ex.Message}";
+        }
+    }
+
+    public IReadOnlyList<RecentProject> GetRecentProjects(LaunchableInstance launchable, int maxCount = 10)
+    {
+        return _recentProjectsService.GetRecentProjects(launchable.Instance, maxCount);
+    }
+
+    public void OpenRecentProject(LaunchableInstance launchable, RecentProject project)
+    {
+        if (!project.Exists)
+        {
+            StatusText = $"Project not found: {project.Path}";
+            return;
+        }
+
+        try
+        {
+            _launchService.LaunchInstanceWithSolution(launchable.Instance, project.Path, launchable.RootSuffix);
+        }
+        catch (Exception ex)
+        {
+            StatusText = $"Failed to open project: {ex.Message}";
         }
     }
 

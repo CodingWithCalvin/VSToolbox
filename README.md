@@ -44,6 +44,7 @@ Visual Studio Toolbox is a sleek **system tray application** for Windows that he
 | 🖥️ **Windows Terminal** | Integrates with your Windows Terminal profiles |
 | 🛠️ **VS Installer Integration** | Modify, update, or manage installations directly |
 | 📦 **Workload Detection** | View installed workloads for each instance |
+| 📂 **Recent Projects** | Quick access to recently opened solutions ⭐ **NEW!** |
 
 ### 📝 **VS Code Features** ⭐ **NEW!**
 
@@ -53,6 +54,7 @@ Visual Studio Toolbox is a sleek **system tray application** for Windows that he
 | 📂 **Quick Access** | Open extensions folder, data folder, and installation directory |
 | 🪟 **New Window** | Launch new VS Code windows quickly |
 | 🎨 **Custom Icons** | Support for custom VS Code icons |
+| 📂 **Recent Folders** | Quick access to recently opened folders ⭐ **NEW!** |
 
 ---
 
@@ -110,6 +112,7 @@ dotnet run --project src/CodingWithCalvin.VSToolbox
 **Click** the ▶️ play button to launch Visual Studio, or **click** the ⚙️ gear button for more options:
 
 #### 📋 **Visual Studio Menu:**
+- 📂 **Recent Projects** ⭐ **NEW!** - Quick access to recently opened solutions
 - 📂 **Open Explorer** - Open the VS installation folder
 - 💻 **VS CMD Prompt** - Launch Developer Command Prompt
 - 🐚 **VS PowerShell** - Launch Developer PowerShell
@@ -124,6 +127,7 @@ dotnet run --project src/CodingWithCalvin.VSToolbox
 **Click** the ▶️ play button to launch VS Code, or **click** the ⚙️ gear button for more options:
 
 #### 📋 **VS Code Menu:**
+- 📂 **Recent Folders** ⭐ **NEW!** - Quick access to recently opened folders
 - 🧩 **Open Extensions Folder** - Browse installed extensions
 - 🪟 **Open New Window** - Launch a new VS Code window
 - 📂 **Open Installation Folder** - Browse VS Code files
@@ -158,6 +162,7 @@ VSToolbox/
 ├── 📁 docs/                                  # 📚 Documentation
 │   ├── VSCODE_INTEGRATION.md                # VS Code features guide
 │   ├── VS_INSTALLER_INTEGRATION.md          # VS Installer guide
+│   ├── RECENT_PROJECTS.md                   # Recent Projects feature guide
 │   └── VSCODE_ICONS.md                      # Icon setup guide
 │
 ├── 📁 scripts/                               # 🔧 Helper scripts
@@ -185,6 +190,12 @@ VSToolbox/
 
 ### 🎉 **Latest Features**
 
+#### ✅ **Recent Projects** ⭐ **NEW!**
+- Quick access to recently opened solutions for Visual Studio
+- Quick access to recently opened folders for VS Code
+- Sorted by last access time
+- Click to open directly
+
 #### ✅ **VS Code Integration** ⭐
 - Detects Visual Studio Code and VS Code Insiders
 - Shows installed extensions
@@ -201,7 +212,7 @@ VSToolbox/
 - Support for multiple VS Code installation locations
 - Extension discovery and counting
 
-See [VSCODE_INTEGRATION.md](docs/VSCODE_INTEGRATION.md) and [VS_INSTALLER_INTEGRATION.md](docs/VS_INSTALLER_INTEGRATION.md) for detailed documentation.
+See [RECENT_PROJECTS.md](docs/RECENT_PROJECTS.md), [VSCODE_INTEGRATION.md](docs/VSCODE_INTEGRATION.md) and [VS_INSTALLER_INTEGRATION.md](docs/VS_INSTALLER_INTEGRATION.md) for detailed documentation.
 
 ---
 
@@ -209,6 +220,7 @@ See [VSCODE_INTEGRATION.md](docs/VSCODE_INTEGRATION.md) and [VS_INSTALLER_INTEGR
 
 - 📖 [VS Code Integration Guide](docs/VSCODE_INTEGRATION.md)
 - 🛠️ [Visual Studio Installer Integration](docs/VS_INSTALLER_INTEGRATION.md)
+- 📂 [Recent Projects Feature](docs/RECENT_PROJECTS.md) ⭐ **NEW!**
 - 🎨 [VS Code Icons Setup](docs/VSCODE_ICONS.md)
 - 📝 [Implementation Details](docs/VS_INSTALLER_IMPLEMENTATION.md)
 
@@ -279,13 +291,14 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 Future enhancements we're considering:
 
+- [x] ~~Recent projects list~~ ✅ **Implemented!**
 - [ ] VS Code workspace detection
 - [ ] VS Code extension management
 - [ ] More Visual Studio Installer commands
 - [ ] Custom launch arguments
 - [ ] Keyboard shortcuts
-- [ ] Recent projects list
 - [ ] Solution file associations
+- [ ] Pin favorite projects
 
 ---
 
